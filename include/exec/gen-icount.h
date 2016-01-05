@@ -14,12 +14,28 @@ static inline void gen_tb_start(TranslationBlock *tb)
     TCGv_i32 count, flag, imm;
     int i;
 
+#ifdef CONFIG_TB_ANNOTATION
+    TCGv_ptr annotation_ptr;
+    TCGv_i64 pc;
+#endif
+
     exitreq_label = gen_new_label();
     flag = tcg_temp_new_i32();
     tcg_gen_ld_i32(flag, cpu_env,
                    offsetof(CPUState, tcg_exit_req) - ENV_OFFSET);
     tcg_gen_brcondi_i32(TCG_COND_NE, flag, 0, exitreq_label);
     tcg_temp_free_i32(flag);
+
+#ifdef CONFIG_TB_ANNOTATION
+    pc = tcg_const_i64(tb->pc);
+    annotation_ptr = tcg_temp_new_ptr();
+    tcg_gen_ld_ptr(annotation_ptr, cpu_env,
+                   -ENV_OFFSET + offsetof(CPUState, tb_annotation));
+
+    gen_helper_annotation(pc, annotation_ptr);
+    tcg_temp_free_i64(pc);
+    tcg_temp_free_ptr(annotation_ptr);
+#endif
 
     if (!(tb->cflags & CF_USE_ICOUNT)) {
         return;
@@ -45,6 +61,8 @@ static inline void gen_tb_start(TranslationBlock *tb)
     tcg_gen_st16_i32(count, cpu_env,
                      -ENV_OFFSET + offsetof(CPUState, icount_decr.u16.low));
     tcg_temp_free_i32(count);
+
+
 }
 
 static void gen_tb_end(TranslationBlock *tb, int num_insns)

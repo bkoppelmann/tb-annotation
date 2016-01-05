@@ -14,3 +14,7 @@ DEF_HELPER_FLAGS_2(sar_i64, TCG_CALL_NO_RWG_SE, s64, s64, s64)
 
 DEF_HELPER_FLAGS_2(mulsh_i64, TCG_CALL_NO_RWG_SE, s64, s64, s64)
 DEF_HELPER_FLAGS_2(muluh_i64, TCG_CALL_NO_RWG_SE, i64, i64, i64)
+
+#ifdef CONFIG_TB_ANNOTATION
+DEF_HELPER_2(annotation, void, i64, ptr)
+#endif
