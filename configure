@@ -345,6 +345,7 @@ vhdx=""
 numa=""
 tcmalloc="no"
 jemalloc="no"
+tbannotation="no"
 
 # parse CC options first
 for opt do
@@ -1169,6 +1170,10 @@ for opt do
   ;;
   --enable-jemalloc) jemalloc="yes"
   ;;
+  --disable-tbannotation) tbannotation="no"
+  ;;
+  --enable-tbannotation) tbannotation="yes"
+  ;;
   *)
       echo "ERROR: unknown option $opt"
       echo "Try '$0 --help' for more information"
@@ -1391,6 +1396,7 @@ disabled with --disable-FEATURE, default is enabled if available:
   numa            libnuma support
   tcmalloc        tcmalloc support
   jemalloc        jemalloc support
+  tbannotation    TB annotation support
 
 NOTE: The object files are built at the place where configure is launched
 EOF
@@ -4855,6 +4861,7 @@ echo "bzip2 support     $bzip2"
 echo "NUMA host support $numa"
 echo "tcmalloc support  $tcmalloc"
 echo "jemalloc support  $jemalloc"
+echo "TB annotation support $tbannotation"
 
 if test "$sdl_too_old" = "yes"; then
 echo "-> Your SDL version is too old - please upgrade to have SDL support"
@@ -5398,6 +5405,12 @@ echo "CONFIG_TRACE_FILE=$trace_file" >> $config_host_mak
 
 if test "$rdma" = "yes" ; then
   echo "CONFIG_RDMA=y" >> $config_host_mak
+fi
+
+if test "$tbannotation" = "yes" ; then
+  echo "CONFIG_TB_ANNOTATION=y" >> $config_host_mak
+  echo "LIBS+=-lxml2" >> $config_host_mak
+  QEMU_CFLAGS="-I/usr/include/libxml2 $QEMU_CFLAGS"
 fi
 
 # Hold two types of flag:

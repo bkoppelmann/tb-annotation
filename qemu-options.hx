@@ -2737,6 +2737,14 @@ Use @var{bzImage} as kernel image. The kernel can be either a Linux kernel
 or in multiboot format.
 ETEXI
 
+DEF("annotation", HAS_ARG, QEMU_OPTION_annotation, \
+    "-annotation tbAnnotation use 'tbAnnotation' as annotation file\n", QEMU_ARCH_ALL)
+STEXI
+@item -annotation @var{tbAnnotation}
+@findex -annotation
+Use @var{tbAnnotation} as annotation file. TODO: specify file format...
+ETEXI
+
 DEF("append", HAS_ARG, QEMU_OPTION_append, \
     "-append cmdline use 'cmdline' as kernel command line\n", QEMU_ARCH_ALL)
 STEXI

@@ -178,7 +178,8 @@ dummy := $(call unnest-vars,.., \
                qom-obj-y \
                io-obj-y \
                common-obj-y \
-               common-obj-m)
+               common-obj-m \
+               annotation-obj-y)
 target-obj-y := $(target-obj-y-save)
 all-obj-y += $(common-obj-y)
 all-obj-y += $(target-obj-y)
@@ -187,6 +188,7 @@ all-obj-$(CONFIG_SOFTMMU) += $(block-obj-y)
 all-obj-$(CONFIG_USER_ONLY) += $(crypto-aes-obj-y)
 all-obj-$(CONFIG_SOFTMMU) += $(crypto-obj-y)
 all-obj-$(CONFIG_SOFTMMU) += $(io-obj-y)
+all-obj-$(CONFIG_TB_ANNOTATION) += $(annotation-obj-y)
 
 $(QEMU_PROG_BUILD): config-devices.mak
 

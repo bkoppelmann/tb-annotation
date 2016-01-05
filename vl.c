@@ -125,6 +125,8 @@ int main(int argc, char **argv)
 #include "sysemu/replay.h"
 #include "qapi/qmp/qerror.h"
 
+#include "tb-annotation/tb-annotation-parser.h"
+
 #define MAX_VIRTIO_CONSOLES 1
 #define MAX_SCLP_CONSOLES 1
 
@@ -2971,6 +2973,10 @@ int main(int argc, char **argv, char **envp)
     int snapshot, linux_boot;
     const char *initrd_filename;
     const char *kernel_filename, *kernel_cmdline;
+#ifdef CONFIG_TB_ANNOTATION
+    CPUState *cpu = NULL;
+    const char *annotation_filename = NULL;
+#endif
     const char *boot_order = NULL;
     const char *boot_once = NULL;
     DisplayState *ds;
@@ -4017,6 +4023,11 @@ int main(int argc, char **argv, char **envp)
                     exit(1);
                 }
                 break;
+#ifdef CONFIG_TB_ANNOTATION
+            case QEMU_OPTION_annotation:
+                annotation_filename = optarg;
+                break;
+#endif
             default:
                 os_parse_cmd_args(popt->index, optarg);
             }
@@ -4628,6 +4639,20 @@ int main(int argc, char **argv, char **envp)
     }
 
     qdev_machine_creation_done();
+
+#ifdef CONFIG_TB_ANNOTATION
+    if (annotation_filename && (smp_cpus > 1 || smp_cores > 1)) {
+        perror("At the moment only single CPU/core systems are supported " \
+               "by the annotation extension.");
+        exit(1);
+    }
+    if (annotation_filename) {
+        cpu = qemu_get_cpu(0);
+        if (cpu != NULL) {
+            cpu->tb_annotation = tb_annotation_parse(annotation_filename);
+        }
+    }
+#endif
 
     /* TODO: once all bus devices are qdevified, this should be done
      * when bus is created by qdev.c */
