@@ -30,6 +30,10 @@
 #include "qemu/thread.h"
 #include "qemu/typedefs.h"
 
+#ifdef CONFIG_TB_ANNOTATION
+#include "tb-annotation/tb-annotation.h"
+#endif
+
 typedef int (*WriteCoreDumpFunction)(const void *buf, size_t size,
                                      void *opaque);
 
@@ -328,6 +332,11 @@ struct CPUState {
      * autoconverge
      */
     bool throttle_thread_scheduled;
+
+#ifdef CONFIG_TB_ANNOTATION
+    /* Used to annotate cpu state during tb execution */
+    TbAnnotation *tb_annotation;
+#endif
 
     /* Note that this is accessed at the start of every TB via a negative
        offset from AREG0.  Leave this field at the end so as to make the
